@@ -8,7 +8,7 @@ import (
 	"net/http"
 )
 
-func createTestPostCase(w http.ResponseWriter, r *http.Request) {
+func createTestCase(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "application/json")
 	var testCase models.TestCaseModel
 	err := json.NewDecoder(r.Body).Decode(&testCase)
