@@ -1,19 +1,19 @@
 package models
 
 type TestCaseModel struct {
-	ID             uint64
-	Title          string
-	Date           string
-	TestedBy       string
-	Functionality  string
-	Summary        string
-	Description    string
-	Data           string
-	URL            string
-	ExpectedResult string
-	ActualResult   string
-	Environment    string
-	Device         string
+	ID             uint64	`json:"-"`
+	Title          string	`json:"title"`
+	Date           string	`json:"date"`
+	TestedBy       string	`json:"tested_by"`
+	Functionality  string	`json:"functionality"`
+	Summary        string	`json:"summary"`
+	Description    string	`json:"description"`
+	Data           string	`json:"data"`
+	URL            string	`json:"url"`
+	ExpectedResult string	`json:"expected_result"`
+	ActualResult   string	`json:"actual_result"`
+	Environment    string	`json:"environment"`
+	Device         string	`json:"device"`
 }
 
 
