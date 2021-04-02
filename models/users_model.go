@@ -27,3 +27,21 @@ func GetUserByEmail(email string) (Users, error) {
 	}
 	return user, nil
 }
+
+func GetUserByID(id uint32) (Users, error) {
+	conn := Connect()
+	defer conn.Close()
+	query, err := conn.Query(`SELECT * FROM users WHERE id=$1`,id)
+	if err != nil {
+		return Users{}, err
+	}
+	defer query.Close()
+	var user Users
+	if query.Next() {
+		err := query.Scan(&user.ID, &user.FirstName, &user.LastName, &user.Email, &user.Password, &user.CreatedDate)
+		if err != nil {
+			return Users{}, err
+		}
+	}
+	return user, nil
+}
