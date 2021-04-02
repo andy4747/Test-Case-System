@@ -3,16 +3,18 @@ package handlers
 import (
 	"encoding/json"
 	"github.com/angeldhakal/testcase-ms/models"
+	"github.com/angeldhakal/testcase-ms/utils"
+	"log"
 	"net/http"
 )
 
 func createTestPostCase(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "application/json")
-	decoder := json.NewDecoder(r.Body)
 	var testCase models.TestCaseModel
-	err := decoder.Decode(&testCase)
+	err := json.NewDecoder(r.Body).Decode(&testCase)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
+		log.Println(err.Error())
 		return
 	}
 	conn := models.Connect()
@@ -20,6 +22,18 @@ func createTestPostCase(w http.ResponseWriter, r *http.Request) {
 	_, err = conn.Exec(createTestCaseQuery, testCase.Title, testCase.Date, testCase.TestedBy, testCase.Functionality,testCase.Summary,testCase.Description,testCase.Data,testCase.URL,testCase.ExpectedResult,testCase.ActualResult,testCase.Environment,testCase.Device)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
+		log.Println(err.Error())
 		return
 	}
+	w.WriteHeader(http.StatusCreated)
+
+	// debugging code
+	var jsonStr []byte
+	jsonStr, err = utils.ParseToJson(&testCase)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		log.Println(err.Error())
+		return
+	}
+	w.Write(jsonStr)
 }

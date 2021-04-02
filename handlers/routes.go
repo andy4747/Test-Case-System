@@ -10,7 +10,7 @@ func NewRouter() *mux.Router {
 	router.HandleFunc("/", indexHandler).Methods(http.MethodGet)
 	router.HandleFunc("/login",loginUser).Methods(http.MethodPost)
 	router.HandleFunc("/register", registerUser).Methods(http.MethodPost)
-	router.HandleFunc("/case/create", createTestPostCase).Methods(http.MethodPost)
+	router.HandleFunc("/case/create", createTestCase).Methods(http.MethodPost)
 
 	return router
 }
