@@ -1,7 +1,7 @@
 package models
 
 type TestCaseModel struct {
-	ID             uint64	`json:"-"`
+	ID             uint64	`json:"id"`
 	Title          string	`json:"title"`
 	Date           string	`json:"date"`
 	TestedBy       string	`json:"tested_by"`
