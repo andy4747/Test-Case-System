@@ -1,26 +1,26 @@
 package models
 
 type TestCaseModel struct {
-	ID             uint64	`json:"id"`
-	Title          string	`json:"title"`
-	Date           string	`json:"date"`
-	TestedBy       string	`json:"tested_by"`
-	Functionality  string	`json:"functionality"`
-	Summary        string	`json:"summary"`
-	Description    string	`json:"description"`
-	Data           string	`json:"data"`
-	URL            string	`json:"url"`
-	ExpectedResult string	`json:"expected_result"`
-	ActualResult   string	`json:"actual_result"`
-	Environment    string	`json:"environment"`
-	Device         string	`json:"device"`
+	ID             *uint64	`json:"id"`
+	Title          *string	`json:"title"`
+	Date           *string	`json:"date"`
+	TestedBy       *string	`json:"tested_by"`
+	Functionality  *string	`json:"functionality"`
+	Summary        *string	`json:"summary"`
+	Description    *string	`json:"description"`
+	Data           *string	`json:"data"`
+	URL            *string	`json:"url"`
+	ExpectedResult *string	`json:"expected_result"`
+	ActualResult   *string	`json:"actual_result"`
+	Environment    *string	`json:"environment"`
+	Device         *string	`json:"device"`
 }
 
 
 func GetCaseByTitle(title string) (TestCaseModel, error) {
 	conn := Connect()
 	defer conn.Close()
-	sql := `SELECT * FROM test_case WHERE title=$1`
+	sql := `SELECT * FROM test_cases WHERE title=$1`
 	rs, err := conn.Query(sql, title)
 	if err != nil {
 		return TestCaseModel{}, err
@@ -39,7 +39,7 @@ func GetCaseByTitle(title string) (TestCaseModel, error) {
 func GetCaseByID(id uint32) (TestCaseModel, error) {
 	conn := Connect()
 	defer conn.Close()
-	sql := `SELECT * FROM test_case WHERE id=$1`
+	sql := `SELECT * FROM test_cases WHERE id=$1`
 	rs, err := conn.Query(sql, id)
 	if err != nil {
 		return TestCaseModel{}, err
