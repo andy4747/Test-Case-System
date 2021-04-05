@@ -7,9 +7,6 @@ import (
 	"net/http"
 )
 
-//func init() {
-//	log.SetFormatter(&log.JSONFormatter{})
-//}
 
 func getTestCases(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "application/json")
