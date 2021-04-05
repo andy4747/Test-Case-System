@@ -13,6 +13,7 @@ func NewRouter() *mux.Router {
 	router.HandleFunc("/case/create", createTestCase).Methods(http.MethodPost)
 	router.HandleFunc("/cases",getTestCases).Methods(http.MethodGet)
 	router.HandleFunc("/case/delete/{id}", deleteTestCase).Methods(http.MethodDelete)
+	router.HandleFunc("/case/{id}", getTestCase).Methods(http.MethodGet)
 
 	return router
 }
