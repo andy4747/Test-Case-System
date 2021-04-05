@@ -3,7 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"github.com/angeldhakal/testcase-ms/models"
-	"log"
+	log "github.com/sirupsen/logrus"
 	"net/http"
 )
 
@@ -15,7 +15,7 @@ func createTestCase(w http.ResponseWriter, r *http.Request) {
 	testCase.ID = &value
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		log.Println(err.Error())
+		log.Errorln(err.Error())
 		return
 	}
 	//log.Printf("%+v",testCase)
@@ -24,7 +24,7 @@ func createTestCase(w http.ResponseWriter, r *http.Request) {
 	_, err = conn.Exec(createTestCaseQuery, &testCase.Title, &testCase.Date, &testCase.TestedBy, &testCase.Functionality,&testCase.Summary,&testCase.Description,&testCase.Data,&testCase.URL,&testCase.ExpectedResult,&testCase.ActualResult,&testCase.Environment,&testCase.Device)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		log.Println(err.Error())
+		log.Errorln(err.Error())
 		return
 	}
 	w.WriteHeader(http.StatusCreated)

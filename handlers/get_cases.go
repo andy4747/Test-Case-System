@@ -3,23 +3,23 @@ package handlers
 import (
 	"encoding/json"
 	"github.com/angeldhakal/testcase-ms/models"
-	"log"
+	log "github.com/sirupsen/logrus"
 	"net/http"
 )
 
-func init() {
-	log.SetFlags(log.LUTC)
-	log.SetFlags(log.Lshortfile)
-}
+//func init() {
+//	log.SetFormatter(&log.JSONFormatter{})
+//}
 
 func getTestCases(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "application/json")
 	conn := models.Connect()
 	getAllQuery := `SELECT * FROM test_cases`
+	log.Infoln(getAllQuery)
 	queryRows, err := conn.Query(getAllQuery)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		log.Println(err)
+		log.Errorln(err)
 		return
 	}
 	var cases []models.TestCaseModel
@@ -28,7 +28,7 @@ func getTestCases(w http.ResponseWriter, r *http.Request) {
 		err := queryRows.Scan(&testCase.ID,&testCase.Title, &testCase.Date, &testCase.TestedBy, &testCase.Functionality,&testCase.Summary,&testCase.Description,&testCase.Data,&testCase.URL,&testCase.ExpectedResult,&testCase.ActualResult,&testCase.Environment,&testCase.Device)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
-			log.Println(err)
+			log.Errorln(err)
 			return
 		}
 		cases = append(cases,testCase)
@@ -37,7 +37,7 @@ func getTestCases(w http.ResponseWriter, r *http.Request) {
 	jsonCases, err = json.MarshalIndent(&cases,"","  ")
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		log.Println(err)
+		log.Errorln(err)
 		return
 	}
 	w.WriteHeader(http.StatusOK)
