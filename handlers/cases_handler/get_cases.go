@@ -8,7 +8,7 @@ import (
 )
 
 
-func getTestCases(w http.ResponseWriter, r *http.Request) {
+func GetTestCases(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "application/json")
 	conn := models.Connect()
 	getAllQuery := `SELECT * FROM test_cases`
