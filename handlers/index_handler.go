@@ -17,6 +17,7 @@ func allPaths() []apiPaths {
 		{"/case/create", "POST endpoint that create a test case."},
 		{"/cases", "gets all the testcases."},
 		{"/case/delete/{id}", "POST endpoint that create a test case."},
+		{"/case/{id}", "GET endpoint that gets a test case by it's ID."},
 	}
 	return paths
 }

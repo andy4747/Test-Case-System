@@ -1,4 +1,4 @@
-package handlers
+package cases_handler
 
 import (
 	"encoding/json"

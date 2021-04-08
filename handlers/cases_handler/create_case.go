@@ -1,4 +1,4 @@
-package handlers
+package cases_handler
 
 import (
 	"encoding/json"
@@ -7,7 +7,7 @@ import (
 	"net/http"
 )
 
-func createTestCase(w http.ResponseWriter, r *http.Request) {
+func CreateTestCase(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "application/json")
 	var testCase models.TestCaseModel
 	err := json.NewDecoder(r.Body).Decode(&testCase)

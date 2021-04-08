@@ -1,4 +1,4 @@
-package handlers
+package cases_handler
 
 import (
 	"github.com/angeldhakal/testcase-ms/models"
