@@ -9,7 +9,7 @@ import (
 	"strconv"
 )
 
-func  getTestCase(w http.ResponseWriter, r *http.Request) {
+func  GetTestCase(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	params := mux.Vars(r)
 	id, err := strconv.ParseUint(params["id"],10,64)
