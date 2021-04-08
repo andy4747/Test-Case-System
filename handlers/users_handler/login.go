@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-func loginUser(w http.ResponseWriter, r *http.Request) {
+func LoginUser(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type","application/json")
 	fmt.Fprintf(w,`{"endpoint":"login"}`)
 }
