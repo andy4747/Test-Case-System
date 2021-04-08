@@ -1,14 +1,12 @@
 package models
 
 type Users struct {
-	ID          uint64
-	FirstName   string
-	LastName    string
-	Email       string
-	Password    string
-	CreatedDate string
+	ID          uint64 `json:"id"`
+	Username	string `json:"username"`
+	Email       string `json:"email"`
+	Password    string `json:"password"`
+	CreatedAt   string `json:"created_at"`
 }
-
 
 func GetUserByEmail(email string) (Users, error) {
 	conn := Connect()
@@ -20,7 +18,7 @@ func GetUserByEmail(email string) (Users, error) {
 	defer query.Close()
 	var user Users
 	if query.Next() {
-		err := query.Scan(&user.ID, &user.FirstName, &user.LastName, &user.Email, &user.Password, &user.CreatedDate)
+		err := query.Scan(&user.ID, &user.Username, &user.Email, &user.Password, &user.CreatedAt)
 		if err != nil {
 			return Users{}, err
 		}
@@ -38,7 +36,7 @@ func GetUserByID(id uint32) (Users, error) {
 	defer query.Close()
 	var user Users
 	if query.Next() {
-		err := query.Scan(&user.ID, &user.FirstName, &user.LastName, &user.Email, &user.Password, &user.CreatedDate)
+		err := query.Scan(&user.ID, &user.Username, &user.Email, &user.Password, &user.CreatedAt)
 		if err != nil {
 			return Users{}, err
 		}
