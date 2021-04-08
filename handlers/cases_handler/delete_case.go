@@ -8,7 +8,7 @@ import (
 	"strconv"
 )
 
-func deleteTestCase(w http.ResponseWriter, r *http.Request) {
+func DeleteTestCase(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	id, err := strconv.ParseUint(params["id"],10,64)
 	if err != nil {
