@@ -1,45 +1,69 @@
 package models
 
+import (
+	"gorm.io/gorm"
+)
+
 type Users struct {
-	ID          uint64 `json:"id"`
-	Username	string `json:"username"`
-	Email       string `json:"email"`
-	Password    string `json:"password"`
-	CreatedAt   string `json:"created_at"`
+	gorm.Model
+	Username  string `json:"username"`
+	Email     string `json:"email"`
+	Password  string `json:"password"`
+	CreatedAt string `json:"created_at"`
+	Superuser bool   `json:"superuser"`
 }
 
-func GetUserByEmail(email string) (Users, error) {
-	conn := Connect()
-	defer conn.Close()
-	query, err := conn.Query(`SELECT * FROM users WHERE email=$1`,email)
-	if err != nil {
-		return Users{}, err
-	}
-	defer query.Close()
-	var user Users
-	if query.Next() {
-		err := query.Scan(&user.ID, &user.Username, &user.Email, &user.Password, &user.CreatedAt)
-		if err != nil {
-			return Users{}, err
-		}
-	}
-	return user, nil
+func (Users) TableName() string {
+	return "users"
 }
 
-func GetUserByID(id uint32) (Users, error) {
-	conn := Connect()
-	defer conn.Close()
-	query, err := conn.Query(`SELECT * FROM users WHERE id=$1`,id)
-	if err != nil {
-		return Users{}, err
-	}
-	defer query.Close()
-	var user Users
-	if query.Next() {
-		err := query.Scan(&user.ID, &user.Username, &user.Email, &user.Password, &user.CreatedAt)
-		if err != nil {
-			return Users{}, err
-		}
-	}
-	return user, nil
+type UserRepository interface {
+	AddUser(Users) (Users, error)
+	GetUser(int) (Users, error)
+	GetUserByEmail(string) (Users, error)
+	GetAllUsers() ([]Users, error)
+	UpdateUser(Users) (Users, error)
+	DeleteUser(Users) (Users, error)
 }
+
+type userRepository struct {
+	connection *gorm.DB
+}
+
+func NewUserRepository() UserRepository {
+	return &userRepository{
+		connection: Connect(),
+	}
+}
+
+func (db *userRepository) AddUser(user Users) (Users, error) {
+	return user, db.connection.Create(&user).Error
+}
+
+func (db *userRepository) GetUser(id int) (user Users, err error) {
+    return user, db.connection.First(&user, id).Error
+}
+
+
+func (db *userRepository) GetUserByEmail(email string) (user Users, err error) {
+    return user, db.connection.First(&user, "email=?", email).Error
+}
+
+func (db *userRepository) GetAllUsers() (users []Users, err error) {
+    return users, db.connection.Find(&users).Error
+}
+
+func (db *userRepository) UpdateUser(user Users) (Users, error) {
+    if err := db.connection.First(&user, user.ID).Error; err != nil {
+        return user, err
+    }
+    return user, db.connection.Model(&user).Updates(&user).Error
+}
+
+func (db *userRepository) DeleteUser(user Users) (Users, error) {
+    if err := db.connection.First(&user, user.ID).Error; err != nil {
+        return user, err
+    }
+    return user, db.connection.Model(&user).Error
+}
+
