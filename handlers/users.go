@@ -12,6 +12,11 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+// TODOS
+/*
+TODO => add current time in AddUser Handler for CurrentDate Field
+*/
+
 type UserHandler interface {
 	AddUser(http.HandlerFunc)
 	GetUser(http.HandlerFunc)
@@ -42,7 +47,7 @@ func (h *userHandler) AddUser(w http.ResponseWriter, r *http.Request) {
 	}
 	utils.HashPassword(&user.Password)
 	user, err = h.repo.AddUser(user)
-	if err != nil{
+	if err != nil {
 		log.Errorln("Couldn't Register user due to some server issues")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
@@ -90,47 +95,78 @@ func (h *userHandler) GetAllUser(w http.ResponseWriter, r *http.Request) {
 	var allUsers []byte
 	allUsers, err = json.MarshalIndent(&users, "", "  ")
 	if err != nil {
-        log.Errorln("Could't encode the json due to some server issue")
-        w.WriteHeader(http.StatusInternalServerError)
-        return
+		log.Errorln("Could't encode the json due to some server issue")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
-    w.Write(allUsers)
+	w.Write(allUsers)
 }
 
 func (h *userHandler) UpdateUser(w http.ResponseWriter, r *http.Request) {
-    w.Header().Set("Content-Type","application/json")
-    var user models.Users
-    err := json.NewDecoder(r.Body).Decode(&user)
-    if err != nil {
-        log.Errorln("Provide valid information")
-        w.WriteHeader(http.StatusBadRequest)
-        return
-    }
-    user, err = h.repo.UpdateUser(user)
-    if err != nil {
-        log.Errorln("Couldn't update due to some server issues")
-        w.WriteHeader(http.StatusInternalServerError)
-        return
-    }
-    w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "application/json")
+	var user models.Users
+	err := json.NewDecoder(r.Body).Decode(&user)
+	if err != nil {
+		log.Errorln("Provide valid information")
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	user, err = h.repo.UpdateUser(user)
+	if err != nil {
+		log.Errorln("Couldn't update due to some server issues")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
 }
 
 func (h *userHandler) DeleteUser(w http.ResponseWriter, r *http.Request) {
-    w.Header().Set("Content-Type", "application/json")
-    params := mux.Vars(r)
-    id, err := strconv.Atoi(params["id"])
-    if err != nil {
-        log.Errorln("Enter valid user id")
+	w.Header().Set("Content-Type", "application/json")
+	params := mux.Vars(r)
+	id, err := strconv.Atoi(params["id"])
+	if err != nil {
+		log.Errorln("Enter valid user id")
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	var user models.Users
+	user.ID = uint(id)
+	user, err = h.repo.DeleteUser(user)
+	if err != nil {
+		log.Errorln("Couldn't delete user due to some server error")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusNoContent)
+}
+
+func (h *userHandler) SignInUser(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+    var user utils.Credentials
+    if err := json.NewDecoder(r.Body).Decode(user); err != nil {
+        log.Errorln("Enter valid login credentials")
         w.WriteHeader(http.StatusBadRequest)
         return
     }
-    var user models.Users
-    user.ID = uint(id)
-    user, err = h.repo.DeleteUser(user)
+    dbUser, err := h.repo.GetUserByEmail(user.Email)
     if err != nil {
-        log.Errorln("Couldn't delete user due to some server error")
+        log.Errorln("Couldn't get user from database due to some server issues")
         w.WriteHeader(http.StatusInternalServerError)
         return
     }
-    w.WriteHeader(http.StatusNoContent)
+    if isCorrectPassword := utils.ComparePassword(dbUser.Password, user.Password); isCorrectPassword {
+        token := utils.GenerateToken(dbUser.ID)
+        cookie := http.Cookie{
+            Name: "token",
+            Value: token,
+            HttpOnly: true,
+            Secure: true,
+        }
+        http.SetCookie(w, &cookie)
+        w.Header().Add("token", token)
+        w.WriteHeader(http.StatusOK)
+        return
+    }
+    w.WriteHeader(http.StatusInternalServerError)
+    return
 }
