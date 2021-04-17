@@ -1,35 +1,38 @@
 package utils
 
 import (
+	"fmt"
+	log "github.com/sirupsen/logrus"
 	"os"
 	"time"
-	"github.com/dgrijalva/jwt-go"
-    "fmt"
+
+	jwt "github.com/dgrijalva/jwt-go"
 )
 
 type Credentials struct {
-    Email string	`json:"email"`
-	Password string	`json:"password"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
 }
 
-func GenerateToken(email string) string {
-    claims := jwt.MapClaims{
-        "exp" : time.Now().Add(time.Hour * 3).Unix(),
-        "iat" : time.Now().Unix(),
-        "user": email,
+func GenerateToken(userID uint) (string, error) {
+    token := jwt.New(jwt.SigningMethodHS256)
+    claims := token.Claims.(jwt.MapClaims)
+    claims["user"]=userID
+    claims["exp"]=time.Now().Add(time.Hour * 3).Unix()
+    tokenString, err := token.SignedString([]byte(os.Getenv("SECRET_KEY")))
+    if err != nil {
+        log.Errorln("Couldn't generate token")
+        return "", err
     }
-    token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-    t, _ := token.SignedString(os.Getenv("SECRET_KEY"))
-    return t
+    return tokenString, nil
 }
 
 func ValidateToken(token string) (*jwt.Token, error) {
-    return jwt.Parse(token, func (token *jwt.Token) (interface{}, error){
-        if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-            //return nil as secret key
-            return nil, fmt.Errorf("wring signing method: %v",token.Header["alg"])
-        }
-        return []byte(os.Getenv("SECRET_KEY")), nil
-    })
+	return jwt.Parse(token, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			//return nil as secret key
+			return nil, fmt.Errorf("wring signing method: %v", token.Header["alg"])
+		}
+		return []byte(os.Getenv("SECRET_KEY")), nil
+	})
 }
-
