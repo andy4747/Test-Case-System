@@ -2,7 +2,6 @@ package utils
 
 import (
     "golang.org/x/crypto/bcrypt"
-    log "github.com/sirupsen/logrus"
 )
 
 func HashPassword(password *string) {
@@ -11,11 +10,6 @@ func HashPassword(password *string) {
     *password = string(hashedPassword)
 }
 
-func ComparePassword(hashedPassword, password string){
-    hash := []byte(hashedPassword)
-    pass := []byte(password)
-    err := bcrypt.CompareHashAndPassword(hash, pass)
-    if err != nil {
-        log.Errorln("Couldn't Compare Hash and Password")
-    }
+func ComparePassword(hashedPassword, password string) bool {
+    return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password)) == nil
 }
