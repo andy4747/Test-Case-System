@@ -16,6 +16,7 @@ type TestCaseModel struct {
 	ActualResult   string	`json:"actual_result"`
 	Environment    string	`json:"environment"`
 	Device         string	`json:"device"`
+    User           string   `json:"user"`
 }
 
 //TableName for the TestCaseModel
