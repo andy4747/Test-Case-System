@@ -1,22 +1,20 @@
 package main
 
 import (
-	"github.com/angeldhakal/testcase-ms/handlers"
-	"github.com/angeldhakal/testcase-ms/models"
-	log "github.com/sirupsen/logrus"
 	"net/http"
+
+	"github.com/angeldhakal/testcase-ms/routes"
+	"github.com/gorilla/handlers"
+	log "github.com/sirupsen/logrus"
 )
 
 func main() {
-	err := models.CreateTablesIfNotExists(models.Connect())
-	if err != nil {
-		log.Fatalln(err)
-	}
 	log.Println("Listening at http://localhost:8080/")
-	log.Infoln("Necessary tables are present.")
-
-	r := handlers.MainRouter()
-	err = http.ListenAndServe(":8080", r)
+	r := routes.MainRouter()
+    headers := handlers.AllowedHeaders([]string{"X-Requested-With","Content-Type", "Authorization", "token", "Set-Cookie"})
+    methods := handlers.AllowedMethods([]string{"GET", "POST", "OPTIONS", "PUT", "DELETE"})
+    origins := handlers.AllowedOrigins([]string{"*"})
+	err := http.ListenAndServe(":8080", handlers.CORS(headers, methods, origins)(r))
 
 	if err != nil {
 		log.Fatal(err.Error())
