@@ -22,3 +22,15 @@ func NewCaseRepository() *caseRepository {
         connection: models.Connect(),
     }
 }
+
+
+func (db *caseRepository) GetCase(id int) (models.TestCaseModel, error) {return models.TestCaseModel{}, nil}
+
+func (db *caseRepository) GetAllCases() ([]models.TestCaseModel, error)  {return []models.TestCaseModel{}, nil}
+
+func (db *caseRepository) AddCase(testCase models.TestCaseModel) (models.TestCaseModel, error) {return models.TestCaseModel{}, nil}
+
+func (db *caseRepository) UpdateCase(testCase models.TestCaseModel) (models.TestCaseModel, error)  {return models.TestCaseModel{}, nil}
+
+func (db *caseRepository) DeleteCase(testCase models.TestCaseModel) (models.TestCaseModel, error)  {return models.TestCaseModel{}, nil}
+
