@@ -1,6 +1,8 @@
 package routes
 
 import (
+	"net/http"
+
 	"github.com/angeldhakal/testcase-ms/handlers"
 	"github.com/angeldhakal/testcase-ms/middlewares"
 	"github.com/gorilla/mux"
@@ -12,8 +14,8 @@ func MainRouter() *mux.Router {
 
 	//path prefixing for user
 	user := router.PathPrefix("/users").Subrouter()
-	user.HandleFunc("/register", middlewares.CORSMiddleware(middlewares.LoggerMiddleware(userHandler.AddUser)))
-	user.HandleFunc("/login", middlewares.CORSMiddleware(middlewares.LoggerMiddleware(userHandler.SignInUser)))
+	user.HandleFunc("/register", middlewares.LoggerMiddleware(userHandler.AddUser)).Methods(http.MethodPost, http.MethodOptions)
+	user.HandleFunc("/login", middlewares.LoggerMiddleware(userHandler.SignInUser)).Methods(http.MethodPost, http.MethodOptions)
 
 	//path prefixing
 
