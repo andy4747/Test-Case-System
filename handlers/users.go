@@ -30,8 +30,8 @@ type userHandler struct {
 	repo repository.UserRepository
 }
 
-func NewUserHandler() UserHandler {
-	return &userHandler{
+func NewUserHandler() userHandler {
+	return userHandler{
 		repo: repository.NewUserRepository(),
 	}
 }
@@ -142,31 +142,37 @@ func (h *userHandler) DeleteUser(w http.ResponseWriter, r *http.Request) {
 
 func (h *userHandler) SignInUser(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-    var user utils.Credentials
-    if err := json.NewDecoder(r.Body).Decode(user); err != nil {
-        log.Errorln("Enter valid login credentials")
-        w.WriteHeader(http.StatusBadRequest)
-        return
-    }
-    dbUser, err := h.repo.GetUserByEmail(user.Email)
-    if err != nil {
-        log.Errorln("Couldn't get user from database due to some server issues")
-        w.WriteHeader(http.StatusInternalServerError)
-        return
-    }
-    if isCorrectPassword := utils.ComparePassword(dbUser.Password, user.Password); isCorrectPassword {
-        token := utils.GenerateToken(dbUser.ID)
-        cookie := http.Cookie{
-            Name: "token",
-            Value: token,
-            HttpOnly: true,
-            Secure: true,
+	var user utils.Credentials
+	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
+		log.Errorln("Enter valid login credentials")
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	dbUser, err := h.repo.GetUserByEmail(user.Email)
+	if err != nil {
+		log.Errorln("Couldn't get user from database due to some server issues")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	if isCorrectPassword := utils.ComparePassword(dbUser.Password, user.Password); isCorrectPassword {
+		token, err := utils.GenerateToken(dbUser.ID)
+        if err != nil {
+            log.Errorln("Token generation failed")
+            w.WriteHeader(http.StatusInternalServerError)
+            return
         }
-        http.SetCookie(w, &cookie)
-        w.Header().Add("token", token)
-        w.WriteHeader(http.StatusOK)
-        return
-    }
-    w.WriteHeader(http.StatusInternalServerError)
-    return
+		cookie := http.Cookie{
+			Name:     "token",
+			Value:    token,
+			HttpOnly: true,
+			Secure:   true,
+		}
+		log.Infoln(token)
+		http.SetCookie(w, &cookie)
+		w.Header().Add("token", token)
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+	w.WriteHeader(http.StatusInternalServerError)
+	return
 }
