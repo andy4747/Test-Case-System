@@ -14,8 +14,8 @@ func MainRouter() *mux.Router {
 
 	//path prefixing for user
 	user := router.PathPrefix("/users").Subrouter()
-	user.HandleFunc("/register", middlewares.LoggerMiddleware(userHandler.AddUser)).Methods(http.MethodPost, http.MethodOptions)
-	user.HandleFunc("/login", middlewares.LoggerMiddleware(userHandler.SignInUser)).Methods(http.MethodPost, http.MethodOptions)
+	user.HandleFunc("/register", middlewares.LoggerMiddleware(userHandler.AddUser)).Methods(http.MethodPost)
+	user.HandleFunc("/login", middlewares.LoggerMiddleware(userHandler.SignInUser)).Methods(http.MethodPost)
 
 	//path prefixing
 
