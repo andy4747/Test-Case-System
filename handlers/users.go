@@ -12,11 +12,6 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-// TODOS
-/*
-TODO => add current time in AddUser Handler for CurrentDate Field
-*/
-
 type UserHandler interface {
 	AddUser(http.HandlerFunc)
 	GetUser(http.HandlerFunc)
@@ -156,11 +151,11 @@ func (h *userHandler) SignInUser(w http.ResponseWriter, r *http.Request) {
 	}
 	if isCorrectPassword := utils.ComparePassword(dbUser.Password, user.Password); isCorrectPassword {
 		token, err := utils.GenerateToken(dbUser.ID)
-        if err != nil {
-            log.Errorln("Token generation failed")
-            w.WriteHeader(http.StatusInternalServerError)
-            return
-        }
+		if err != nil {
+			log.Errorln("Token generation failed")
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
 		cookie := http.Cookie{
 			Name:     "token",
 			Value:    token,
