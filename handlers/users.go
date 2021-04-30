@@ -7,7 +7,7 @@ import (
 
 	"github.com/angeldhakal/testcase-ms/models"
 	"github.com/angeldhakal/testcase-ms/repository"
-	"github.com/angeldhakal/testcase-ms/utils"
+	"github.com/angeldhakal/testcase-ms/util"
 	"github.com/gorilla/mux"
 	log "github.com/sirupsen/logrus"
 )
@@ -40,7 +40,7 @@ func (h *userHandler) AddUser(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	utils.HashPassword(&user.Password)
+	util.HashPassword(&user.Password)
 	user, err = h.repo.AddUser(user)
 	if err != nil {
 		log.Errorln("Couldn't Register user due to some server issues")
@@ -137,7 +137,7 @@ func (h *userHandler) DeleteUser(w http.ResponseWriter, r *http.Request) {
 
 func (h *userHandler) SignInUser(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	var user utils.Credentials
+	var user util.Credentials
 	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
 		log.Errorln("Enter valid login credentials")
 		w.WriteHeader(http.StatusBadRequest)
@@ -149,8 +149,8 @@ func (h *userHandler) SignInUser(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	if isCorrectPassword := utils.ComparePassword(dbUser.Password, user.Password); isCorrectPassword {
-		token, err := utils.GenerateToken(dbUser.ID)
+	if isCorrectPassword := util.ComparePassword(dbUser.Password, user.Password); isCorrectPassword {
+		token, err := util.GenerateToken(dbUser.ID)
 		if err != nil {
 			log.Errorln("Token generation failed")
 			w.WriteHeader(http.StatusInternalServerError)
