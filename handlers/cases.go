@@ -24,7 +24,7 @@ type caseHandler struct {
 	repo repository.CaseRepository
 }
 
-func NewcaseHandler() caseHandler {
+func NewCaseHandler() caseHandler {
 	return caseHandler{
 		repo: repository.NewCaseRepository(),
 	}
