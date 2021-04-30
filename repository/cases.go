@@ -6,8 +6,8 @@ import (
 )
 
 type CaseRepository interface {
-	GetCase(int) (models.TestCaseModel, error)
-	GetAllCases(models.TestCaseModel) ([]models.TestCaseModel, error)
+	GetCase(int, string) (models.TestCaseModel, error)
+	GetAllCases(string) ([]models.TestCaseModel, error)
 	AddCase(models.TestCaseModel) (models.TestCaseModel, error)
 	UpdateCase(models.TestCaseModel) (models.TestCaseModel, error)
 	DeleteCase(models.TestCaseModel) (models.TestCaseModel, error)
@@ -17,7 +17,7 @@ type caseRepository struct {
 	connection *gorm.DB
 }
 
-func NewCaseRepository() *caseRepository {
+func NewCaseRepository() CaseRepository {
 	return &caseRepository{
 		connection: models.Connect(),
 	}
