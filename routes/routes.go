@@ -17,7 +17,13 @@ func MainRouter() *mux.Router {
 	user.HandleFunc("/register", middlewares.LoggerMiddleware(userHandler.AddUser)).Methods(http.MethodPost)
 	user.HandleFunc("/login", middlewares.LoggerMiddleware(userHandler.SignInUser)).Methods(http.MethodPost)
 
-	//path prefixing
+	//case handler
+	caseHandler := handlers.NewCaseHandler()
+
+	//path prefixing for cases
+	cases := router.PathPrefix("/api/v1/cases").Subrouter()
+	cases.HandleFunc("/get/{id}", caseHandler.GetCase)
+	// cases.HandleFunc("/create", caseHandler.CreateTestCase)
 
 	return router
 }
