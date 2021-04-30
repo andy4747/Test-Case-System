@@ -169,5 +169,4 @@ func (h *userHandler) SignInUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.WriteHeader(http.StatusInternalServerError)
-	return
 }
