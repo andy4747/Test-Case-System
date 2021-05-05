@@ -45,8 +45,8 @@ func (db *caseRepository) UpdateCase(testCase models.TestCaseModel) (models.Test
 	return testCase, db.connection.Model(&testCase).Updates(&testCase).Error
 }
 
-func (db *caseRepository) DeleteCase(testCase models.TestCaseModel) (models.TestCaseModel, error) {
-	if err := db.connection.First(&testCase, testCase.ID).Error; err != nil {
+func (db *caseRepository) DeleteCase(id uint) (testCase models.TestCaseModel, err error) {
+	if err := db.connection.First(&testCase, id).Error; err != nil {
 		return testCase, err
 	}
 	return testCase, db.connection.Delete(&testCase).Error
