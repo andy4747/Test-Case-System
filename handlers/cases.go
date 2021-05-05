@@ -95,7 +95,21 @@ func (h *caseHandler) CreateCase(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *caseHandler) UpdateCase(w http.ResponseWriter, r *http.Request) {
-
+	w.Header().Set("Content-Type", "application/json")
+	var testCase models.TestCaseModel
+	err := json.NewDecoder(r.Body).Decode(&testCase)
+	if err != nil {
+		log.Errorln(err.Error())
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	_, err = h.repo.UpdateCase(testCase)
+	if err != nil {
+		log.Errorln(err.Error())
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+	w.WriteHeader(http.StatusNoContent)
 }
 
 func (h *caseHandler) DeleteCase(w http.ResponseWriter, r *http.Request) {
