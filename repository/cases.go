@@ -10,7 +10,7 @@ type CaseRepository interface {
 	GetAllCases(string) ([]models.TestCaseModel, error)
 	AddCase(models.TestCaseModel) (models.TestCaseModel, error)
 	UpdateCase(models.TestCaseModel) (models.TestCaseModel, error)
-	DeleteCase(models.TestCaseModel) (models.TestCaseModel, error)
+	DeleteCase(int) (models.TestCaseModel, error)
 }
 
 type caseRepository struct {
@@ -45,7 +45,7 @@ func (db *caseRepository) UpdateCase(testCase models.TestCaseModel) (models.Test
 	return testCase, db.connection.Model(&testCase).Updates(&testCase).Error
 }
 
-func (db *caseRepository) DeleteCase(id uint) (testCase models.TestCaseModel, err error) {
+func (db *caseRepository) DeleteCase(id int) (testCase models.TestCaseModel, err error) {
 	if err := db.connection.First(&testCase, id).Error; err != nil {
 		return testCase, err
 	}
