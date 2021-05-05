@@ -75,3 +75,29 @@ func (h *caseHandler) GetCase(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Write(caseJson)
 }
+
+func (h *caseHandler) CreateCase(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	var testCase models.TestCaseModel
+	err := json.NewDecoder(r.Body).Decode(&testCase)
+	if err != nil {
+		log.Errorln("Invalid Data Entered")
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	_, err = h.repo.AddCase(testCase)
+	if err != nil {
+		log.Errorln(err.Error())
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusNoContent)
+}
+
+func (h *caseHandler) UpdateCase(w http.ResponseWriter, r *http.Request) {
+
+}
+
+func (h *caseHandler) DeleteCase(w http.ResponseWriter, r *http.Request) {
+
+}
