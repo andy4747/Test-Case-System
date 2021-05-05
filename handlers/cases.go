@@ -113,5 +113,20 @@ func (h *caseHandler) UpdateCase(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *caseHandler) DeleteCase(w http.ResponseWriter, r *http.Request) {
-
+	w.Header().Set("Content-Type", "application/json")
+	params := mux.Vars(r)
+	id, err := strconv.Atoi(params["id"])
+	if err != nil {
+		log.Errorln(err.Error())
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	_, err = h.repo.DeleteCase(id)
+	if err != nil {
+		log.Errorln(err.Error())
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(`{"message":"successfully deleted"}`))
 }
