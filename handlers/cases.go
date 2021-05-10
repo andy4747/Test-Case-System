@@ -78,8 +78,28 @@ func (h *caseHandler) GetCase(w http.ResponseWriter, r *http.Request) {
 
 func (h *caseHandler) CreateCase(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
+	token := w.Header().Get("token")
+	if token == "" {
+		log.Errorln("Enter a auth token in the header")
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	tokenClaim, err := util.ValidateToken(token)
+	if err != nil {
+		log.Errorln("Invalid Token")
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	claims, ok := tokenClaim.Claims.(jwt.MapClaims)
+	if !ok {
+		log.Errorln("Couldn't successfully retrieve the token")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	user := claims["user"]
 	var testCase models.TestCaseModel
-	err := json.NewDecoder(r.Body).Decode(&testCase)
+	testCase.User = user.(string)
+	err = json.NewDecoder(r.Body).Decode(&testCase)
 	if err != nil {
 		log.Errorln("Invalid Data Entered")
 		w.WriteHeader(http.StatusBadRequest)
@@ -96,8 +116,31 @@ func (h *caseHandler) CreateCase(w http.ResponseWriter, r *http.Request) {
 
 func (h *caseHandler) UpdateCase(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
+
+	token := w.Header().Get("token")
+	if token == "" {
+		log.Errorln("Enter a auth token in the header")
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	tokenClaim, err := util.ValidateToken(token)
+	if err != nil {
+		log.Errorln("Invalid Token")
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	claims, ok := tokenClaim.Claims.(jwt.MapClaims)
+	if !ok {
+		log.Errorln("Couldn't successfully retrieve the token")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	user := claims["user"]
+
 	var testCase models.TestCaseModel
-	err := json.NewDecoder(r.Body).Decode(&testCase)
+
+	testCase.User = user.(string)
+	err = json.NewDecoder(r.Body).Decode(&testCase)
 	if err != nil {
 		log.Errorln(err.Error())
 		w.WriteHeader(http.StatusBadRequest)
@@ -117,8 +160,35 @@ func (h *caseHandler) DeleteCase(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	id, err := strconv.Atoi(params["id"])
 	if err != nil {
-		log.Errorln(err.Error())
+		log.Errorln("Invalid id")
 		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	token := w.Header().Get("token")
+	if token == "" {
+		log.Errorln("Enter a auth token in the header")
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	var tokenClaim *jwt.Token
+	tokenClaim, err = util.ValidateToken(token)
+	if err != nil {
+		log.Errorln("Invalid Token")
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	claims, ok := tokenClaim.Claims.(jwt.MapClaims)
+	if !ok {
+		log.Errorln("Couldn't successfully retrieve the token")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	user := claims["user"]
+	// var retrievedCase models.TestCaseModel
+	_, err = h.repo.GetCase(id, user.(string))
+	if err != nil {
+		log.Errorln("Case not found")
+		w.WriteHeader(http.StatusNotFound)
 		return
 	}
 	_, err = h.repo.DeleteCase(id)
